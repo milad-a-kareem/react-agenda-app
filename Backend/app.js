@@ -26,13 +26,26 @@ app.use(function (req, res, next) {
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// agenda routes
 app.use("/agendas", agendasRoute);
 
+//root route
 app.get("/", (req, res) => {
   res.send("Welcome to Agendas API.");
 });
+
+// handling other requests (any request which we are not interested in!)
 app.get("*", (req, res) => {
-  res.send("404 Page Not Found.");
+  res.status(404).json({message:"404 Not Found."});
+});
+app.post("*", (req, res) => {
+  res.status(404).json({message:"404 Not Found."});
+});
+app.put("*", (req, res) => {
+  res.status(404).json({message:"404 Not Found."});
+});
+app.delete("*", (req, res) => {
+  res.status(404).json({message:"404 Not Found."});
 });
 
 app.listen(process.env.PORT || 3500);
