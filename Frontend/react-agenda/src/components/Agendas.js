@@ -1,36 +1,20 @@
-import React, { useEffect, useState } from "react";
-import env from "../env";
+import React, { useEffect } from "react";
 import AgendaItem from "./AgendaItem";
 
 import { IoSadOutline } from "react-icons/io5";
 import { ReactComponent as LoadingIcon } from "../assets/rolling.svg";
+import { useDispatch, useSelector } from "react-redux";
+import { getAgendas } from "../redux/agenda-slice";
 
 function Agendas() {
-  const [agendas, setAgendas] = useState([]);
-  const [isloading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(false);
+  const agendas = useSelector((state) => state.agenda.agendas);
+  const dispatch = useDispatch();
+  const isloading = useSelector((state) => state.agenda.loadings.getAll);
+  const isError = useSelector((state) => state.agenda.errors.getAll);
 
   useEffect(() => {
-    fetch(`${env.url}/agendas`)
-      .then((res) => {
-        if (!res.ok) {
-          setIsError(true);
-          setIsLoading(false);
-        } else {
-          return res.json();
-        }
-      })
-      .then((data) => {
-        console.log(data);
-        setAgendas(data.agendas);
-        setIsLoading(false);
-        setIsError(false);
-      })
-      .catch((err) => {
-        setIsLoading(false);
-        setIsError(true);
-      });
-  }, []);
+    dispatch(getAgendas());
+  }, [dispatch]);
 
   const empty = (
     <h2 className="rounded-lg bg-orange-300 p-4 text-lg text-center">
@@ -47,18 +31,19 @@ function Agendas() {
   const loading = (
     <div className="flex w-full items-center justify-center p-4">
       <div className="animate-spin w-20 h-20">
-        <LoadingIcon className="w-full h-full" />
+        <LoadingIcon className="w-full h-full stroke-blue-800" />
       </div>
     </div>
   );
   return (
     <div className="px-4 sm:px-14 flex flex-col gap-4 py-4">
       {isloading && loading}
-      {!isError && !isloading && !agendas.length > 0 && empty}
+      {!isError && !isloading && agendas && !agendas.length > 0 && empty}
       {isError && error}
-      {agendas.map((agenda) => {
-        return <AgendaItem {...agenda} key={agenda._id} />;
-      })}
+      {agendas &&
+        agendas.map((agenda) => {
+          return <AgendaItem {...agenda} key={agenda._id} />;
+        })}
     </div>
   );
 }

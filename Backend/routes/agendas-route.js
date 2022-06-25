@@ -20,7 +20,7 @@ var upload = multer({ storage: storage });
 const Agendas = require("../models/agenda-model");
 
 router.get("/", async (req, res) => {
-  const agendas = await Agendas.find({});
+  const agendas = await Agendas.find({}).sort("-dateTime");
 
   res.status(200).json({ agendas });
 });
@@ -32,6 +32,7 @@ router.delete("/", async (req, res) => {
 });
 
 router.post("/add", async (req, res) => {
+  console.log(req.body);
   if (
     !req.body.title ||
     !req.body.description ||
